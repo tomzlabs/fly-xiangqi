@@ -1,0 +1,34 @@
+{
+  "runtime": "v22.22.0",
+  "platform": "linux",
+  "neurons": 138639,
+  "edges": 15091983,
+  "graphSha256": "981123f48840161cdb7d4f06d8f90efb897362dec50cf4e14f290b7d2fbe72a6",
+  "wasmSha256": "f7b2a5ed511f7adf3f4a71f0d7ff356d6e4d070abb0b3a96a192224a0711e7ba",
+  "wasmMemoryBytes": 188612608,
+  "intact": {
+    "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+    "selected": {
+      "uci": "d7d6",
+      "san": "d6",
+      "score": 0.004040009733559506
+    },
+    "computeMs": 406.8642870000001,
+    "totalSpikes": 10068,
+    "activeNeurons": 590,
+    "outputSpikes": 0,
+    "drivenNeurons": 457,
+    "signalNorm": 0.1410980874002353
+  },
+  "disconnected": {
+    "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+    "selected": null,
+    "computeMs": 389.4874940000002,
+    "totalSpikes": 9795,
+    "activeNeurons": 457,
+    "outputSpikes": 0,
+    "drivenNeurons": 457,
+    "signalNorm": 0
+  },
+  "repeatIdentical": true
+}

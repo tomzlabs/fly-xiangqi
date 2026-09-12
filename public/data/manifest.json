@@ -1,0 +1,62 @@
+{
+  "dataset": "FlyWire FAFB v783 \u00b7 Shiu author release",
+  "neurons": 138639,
+  "edges": 15091983,
+  "synapses": 54492922,
+  "sensory": 10855,
+  "outputs": 1409,
+  "positioned": 138625,
+  "compressedBytes": 49877887,
+  "uncompressedBytes": 91106470,
+  "graphSha256": "981123f48840161cdb7d4f06d8f90efb897362dec50cf4e14f290b7d2fbe72a6",
+  "files": {
+    "neurons.json.gz": {
+      "sha256": "532c0b5d4cd85ed8220463ad8d3cf45ca1029c1669077f6ab3f3b7c731f85127",
+      "bytes": 515025,
+      "rawSha256": "c0b5ef1a9afc93df0bc526eaf1e5f1624ba66e8c3db70fd4ac299f0eb69fd955",
+      "rawBytes": 2987942
+    },
+    "connectome.bin.gz": {
+      "sha256": "e0105aa2fa7d90eeddad9f9c239dc4ddeaeb99872172a82d5704d8ee878a28c6",
+      "bytes": 49877887,
+      "rawSha256": "981123f48840161cdb7d4f06d8f90efb897362dec50cf4e14f290b7d2fbe72a6",
+      "rawBytes": 91106470
+    },
+    "neurons.bin.gz": {
+      "sha256": "89ea48b62c775a1e8169ab73874eb1275ca62390b7425298706305f8f6de1ed9",
+      "bytes": 1443311,
+      "rawSha256": "504a7f657b5e2009398d1d2e7982bc3665a67b560c43d9b6d17d71cb4dfa6265",
+      "rawBytes": 1940946
+    }
+  },
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/philshiu/Drosophila_brain_model/91bdd1e7dcf193f3e7ca5a8933497fcef63b7960/Completeness_783.csv",
+      "sha256": "bbb847a4cc2caaa7a16349722d220c087317b946d148d4d592d94d250617a311",
+      "bytes": 3327347
+    },
+    {
+      "url": "https://raw.githubusercontent.com/philshiu/Drosophila_brain_model/91bdd1e7dcf193f3e7ca5a8933497fcef63b7960/Connectivity_783.parquet",
+      "sha256": "efeb23fb99098e9c390f6869969b2a121a2ee92c833cfc45ecb2c1d8e1af0347",
+      "bytes": 100804642
+    },
+    {
+      "url": "https://raw.githubusercontent.com/philshiu/Drosophila_brain_model/91bdd1e7dcf193f3e7ca5a8933497fcef63b7960/LICENSE",
+      "sha256": "3621f6d6476189190e2960fa43f11b275ba4eca848fdac50a1ba2925de6223e8",
+      "bytes": 1085
+    },
+    {
+      "url": "https://raw.githubusercontent.com/philshiu/Drosophila_brain_model/91bdd1e7dcf193f3e7ca5a8933497fcef63b7960/model.py",
+      "sha256": "fc45837d7122c6ce2a7f3f2f23c515992e4b232aadb919efabb72337fac88e4e",
+      "bytes": 11900
+    },
+    {
+      "url": "https://raw.githubusercontent.com/flyconnectome/flywire_annotations/8587524c1748ce5ef2080822a2fc890fc03bf597/supplemental_files/Supplemental_file1_neuron_annotations.tsv",
+      "sha256": "9a4f8b2f843196074431ebd7cd883536afa1be86c8a4ce90970441e8be81d1be",
+      "bytes": 31718505
+    }
+  ],
+  "transform": "All author neurons and edges retained. Stable CSR sort only. Signed counts are multiplied by 0.275 mV at runtime. Annotation joins do not change the graph.",
+  "reference": "https://doi.org/10.1038/s41586-024-07763-9",
+  "annotationsReference": "https://doi.org/10.1038/s41586-024-07686-5"
+}

@@ -1,0 +1,15 @@
+{
+  "reference": "Brian2 exact linear integration",
+  "neurons": 4,
+  "durationMs": 200.0,
+  "spikeEvents": 136,
+  "counts": [
+    102,
+    23,
+    11,
+    0
+  ],
+  "spikeTimesIdentical": true,
+  "voltageMaxAbsErrorMv": 2.5579538487363607e-13,
+  "scope": "Four-neuron excitation/inhibition/delay/refractory circuit; does not validate full-brain biological fidelity."
+}

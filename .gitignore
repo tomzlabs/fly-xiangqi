@@ -1,0 +1,8 @@
+node_modules/
+dist/
+data/raw/
+public/data/*.gz
+native/target/
+test-results/
+__pycache__/
+*.log

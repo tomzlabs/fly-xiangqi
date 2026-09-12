@@ -1,0 +1,27 @@
+{
+  "name": "fly-chess-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "npm run build:wasm && vite build",
+    "build:web": "vite build",
+    "build:wasm": "node scripts/build-wasm.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "data": "python scripts/prepare_data.py",
+    "test": "cargo test --manifest-path native/Cargo.toml && node --test tests/*.test.mjs",
+    "benchmark": "node scripts/benchmark.mjs",
+    "test:browser": "python scripts/browser_check.py",
+    "test:brian2": "python scripts/verify_brian2.py"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/space-grotesk": "5.3.0",
+    "chess.js": "1.4.0",
+    "three": "0.186.0"
+  },
+  "devDependencies": {
+    "vite": "7.3.6"
+  }
+}
