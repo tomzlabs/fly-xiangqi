@@ -1,6 +1,6 @@
 # Fly Xiangqi Lab · 中国象棋与连接组
 
-基于 [tolatolatop/fly-chess](https://github.com/tolatolatop/fly-chess) 改造的中国象棋版本，保留真实果蝇连接组、Rust/WASM 计算与对照实验。公开源码：[tomzlabs/fly-xiangqi](https://github.com/tomzlabs/fly-xiangqi)。
+基于 [tolatolatop/fly-chess](https://github.com/tolatolatop/fly-chess) 改造的中国象棋版本，保留真实果蝇连接组、Rust/WASM 计算与对照实验。[在线对弈](https://fly-xiangqi.vercel.app) · [公开源码](https://github.com/tomzlabs/fly-xiangqi)。
 
 一个已经能运行的果蝇连接组下棋实验。完整 FlyWire v783 网络在浏览器的 Web Worker 中用 **Rust → WebAssembly** 计算，不需要计算后端。棋盘、神经元点云、活动记录、棋步评分和断开突触的对照实验都可在页面查看。
 
