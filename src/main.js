@@ -7,12 +7,12 @@ const base=import.meta.env.BASE_URL;
 document.querySelector('#app').innerHTML=`
 <div class="shell">
   <header class="topbar">
-    <a class="brand" href="#"><img src="${base}xiangqi-fly-logo.png" alt="象棋苍蝇 Logo"/><div><strong>fly xiangqi lab</strong><small>连接与落子</small></div></a>
+    <a class="brand" href="#"><img src="${base}xiangqi-fly-logo.png" alt="蝇弈 Logo"/><div><strong>蝇弈</strong><small>连接与落子</small></div></a>
     <nav aria-label="主导航"><a href="#play">开始对弈</a><a href="#method">计算说明</a><a href="#sources">数据来源 ↗</a></nav>
     <div class="release"><i></i> XIANGQI / 0.2</div>
   </header>
   <section class="intro" id="play">
-    <div><p class="eyebrow">A CONNECTOME MEETS XIANGQI</p><h1>楚河汉界，<span>落子有回响。</span></h1><p>真实果蝇连接数据，在你的浏览器中计算。<br class="mobile-break"/>落下一枚棋子，观察信号怎样穿过神经网络。</p></div>
+    <div><p class="eyebrow">A CONNECTOME MEETS XIANGQI</p><h1>楚河汉界，<span>落子有回响。</span></h1><p>与果蝇神经网络，弈一局中国象棋。<br class="mobile-break"/>落下一枚棋子，观察信号怎样穿过神经网络。</p></div>
     <div class="intro-aside"><span class="tag" id="runtime"><i></i>正在载入连接组</span><span class="fine">FlyWire v783 · 未训练读出</span></div>
   </section>
   <main class="lab">
@@ -52,7 +52,7 @@ document.querySelector('#app').innerHTML=`
     <section id="method"><p class="eyebrow">INSIDE THE EXPERIMENT</p><h2>真正计算，也明确边界。</h2><p>使用研究作者公开的果蝇神经连接及兴奋／抑制权重，用泄漏整合发放模型（LIF）逐步计算膜电位、延迟传播与放电脉冲。全部 <span id="about-neurons">138,639</span> 个神经元和原始连接都参与模拟。</p><div class="pipeline"><span>棋盘编码</span><i>→</i><span>连接组 · LIF</span><i>→</i><span>神经读出</span><i>→</i><span>合法落子</span></div><ul class="science-list"><li><b>测量数据：</b>连接关系、突触数和神经元锚点来自公开数据；兴奋／抑制符号沿用作者模型。</li><li><b>模型假设：</b>统一的 LIF 参数及时间离散。棋盘到视觉神经元、下行活动到走法的映射由我们定义。</li><li><b>能力边界：</b>读出层尚未学习棋艺，可能走出很差的棋。它是基于连接组的计算实验，不是活体果蝇，也不是生物认知能力的证明。</li></ul><details><summary>膜电位也能影响落子吗？</summary><p>可以。每个输出神经元的特征为：脉冲数 + 平均膜电位偏移 / 7 mV。即使尚未达到放电阈值，经过突触传播的电位变化也能影响线性读出。页面会如实显示零个输出脉冲。</p></details><details><summary>象棋规则与网络各自负责什么？</summary><p>中国象棋规则层只生成合法走法，检查将军、将死与困毙。固定线性投影仅接收 1,409 个下行／运动神经元的模拟活动。没有象棋引擎、局面搜索、子力评分或将杀辅助。若输出信号为零，系统停止走棋并提示调整实验参数。</p></details><details><summary>中国象棋走法与和棋约定</summary><p>红先黑后。车走直线，马走日且不能蹩腿，相象走田且不能过河；仕士和将帅不出九宫，将帅不能照面。炮隔一子吃子，兵卒过河后可横走、不能后退。无合法走法判负（包括困毙）。本实验采用简化和棋约定：同一局面三次重复或连续 120 半回合未吃子判和，暂不裁定竞赛中的长将、长捉。</p></details></section>
     <section id="sources"><p class="eyebrow">OPEN DATA, INSPECTABLE MOVES</p><h2>每一条连接，都有出处。</h2><div class="source-row"><a href="https://github.com/philshiu/Drosophila_brain_model" target="_blank" rel="noreferrer">Drosophila_brain_model ↗</a><span>Shiu 等 · 模型及 v783 数据</span></div><div class="source-row"><a href="https://github.com/flyconnectome/flywire_annotations" target="_blank" rel="noreferrer">FlyWire annotations ↗</a><span>神经元类型与空间锚点</span></div><div class="source-row"><a href="https://doi.org/10.1038/s41586-024-07763-9" target="_blank" rel="noreferrer">Nature · 2024 ↗</a><span>神经元模型的研究基础</span></div><div class="source-row"><a href="${base}data/manifest.json" target="_blank" rel="noreferrer">本次数据清单 ↗</a><span>固定提交 · 数量 · SHA-256</span></div><div class="hash" id="hash">连接图校验中…</div><div style="display:flex;gap:9px;margin-top:19px;flex-wrap:wrap"><button class="button" id="export" disabled>↓ 导出计算记录</button><button class="button" id="export-audit" disabled>↓ 导出对照实验</button></div><p style="font-size:11px;margin-top:14px">记录包含局面、输入种子、每次脉冲、输出特征、候选分数及模型校验值。下载后可核对实际计算链路。</p><details><summary>载入自定义棋局（FEN）</summary><form id="fen-form" style="margin-top:10px"><input id="fen-input" aria-label="FEN 棋局字符串" style="width:100%;padding:8px;border:1px solid #d4d8e5;border-radius:5px;font-size:11px" placeholder="粘贴完整 FEN 字符串"/><button class="button" id="load-fen" type="submit" style="margin-top:8px" disabled>载入局面</button></form></details></section>
   </div>
-  <footer><span><b>fly xiangqi lab</b> 连接数据来自真实果蝇，棋盘接口来自工程设计。</span><span>本机计算 · 完整连接组 · 可重复实验</span></footer>
+  <footer><span><b>蝇弈</b> 连接数据来自真实果蝇，棋盘接口来自工程设计。</span><span>本机计算 · 完整连接组 · 可重复实验</span></footer>
 </div>`;
 
 const $=id=>document.getElementById(id), fmt=x=>x.toLocaleString('en-US');

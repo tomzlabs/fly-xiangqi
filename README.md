@@ -1,4 +1,6 @@
-# Fly Xiangqi Lab · 中国象棋与连接组
+# 蝇弈
+
+与果蝇神经网络，弈一局中国象棋。
 
 基于 [tolatolatop/fly-chess](https://github.com/tolatolatop/fly-chess) 改造的中国象棋版本，保留真实果蝇连接组、Rust/WASM 计算与对照实验。[在线对弈](https://fly-xiangqi.vercel.app) · [公开源码](https://github.com/tomzlabs/fly-xiangqi)。
 

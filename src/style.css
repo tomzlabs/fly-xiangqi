@@ -26,3 +26,6 @@
 /* Shared Xiangqi fly identity: preserve the full wings and transparent edges. */
 .brand img{width:48px;height:48px;object-fit:contain;flex-shrink:0}.avatar:has(img){background:transparent}.avatar img{width:32px;height:32px;object-fit:contain}.loading-orbit img{width:54px;height:54px;object-fit:contain}
 @media(max-width:420px){.brand{gap:8px}.brand img{width:40px;height:40px}}
+/* Chinese brand wordmark. */
+.brand strong{font-family:'Kaiti SC','STKaiti','Songti SC',serif;font-size:30px;letter-spacing:5px;line-height:1.15}footer b{font-family:'Kaiti SC','STKaiti','Songti SC',serif;font-size:16px;letter-spacing:2px}
+@media(max-width:420px){.brand strong{font-size:26px;letter-spacing:4px}}
