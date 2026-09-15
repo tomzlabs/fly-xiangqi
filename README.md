@@ -39,7 +39,7 @@ npm run preview -- --port 5189
 
 ## GitHub 与 Vercel 发布
 
-源码以公开 Fork 形式发布到 [tomzlabs/fly-xiangqi](https://github.com/tomzlabs/fly-xiangqi)，保留上游历史与来源。
+源码以独立公开仓库形式发布到 [tomzlabs/fly-xiangqi](https://github.com/tomzlabs/fly-xiangqi)，已解除 GitHub Fork 关系，保留原始提交历史与来源说明。
 
 Vercel 使用 `vercel.json`：`npm ci` → `npm run data:fetch` → `npm run build:web`，输出目录 `dist`，Node.js 22。浏览器中的计算完全本地运行，无需 API 密钥。
 
@@ -47,7 +47,7 @@ Vercel 使用 `vercel.json`：`npm ci` → `npm run data:fetch` → `npm run bui
 
 ### 许可范围
 
-本次原创新增代码与修改采用 MIT，见 [LICENSE](LICENSE)。上游应用没有声明项目许可证，其原有代码不在本次 MIT 授权范围内；研究数据、字体与第三方库保留各自条款。因此不能将整个 Fork 标为统一 MIT 项目。来源见 [ATTRIBUTION](docs/ATTRIBUTION.md)。
+本次原创新增代码与修改采用 MIT，见 [LICENSE](LICENSE)。上游应用没有声明项目许可证，其原有代码不在本次 MIT 授权范围内；研究数据、字体与第三方库保留各自条款。因此不能将整个项目标为统一 MIT 项目。来源见 [ATTRIBUTION](docs/ATTRIBUTION.md)。
 
 修改 Rust 计算核心后重新编译：
 

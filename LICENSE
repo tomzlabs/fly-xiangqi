@@ -4,11 +4,11 @@ Licensing scope
 The MIT License below applies ONLY to original contributions made for the
 Xiangqi adaptation by tomzlabs, including src/xiangqi.mjs,
 tests/xiangqi.test.mjs, scripts/fetch-data.mjs, and original modifications
-introduced by this fork.
+introduced by this adaptation.
 
 It does not relicense pre-existing code from tolatolatop/fly-chess. That
-upstream repository did not declare a project license when this fork was
-published. Its original authors retain their rights. This public fork
+upstream repository did not declare a project license when this adaptation was
+published. Its original authors retain their rights. This public repository
 therefore must not be described as an entirely MIT-licensed application.
 
 Research data, fonts, third-party libraries and other inherited materials
