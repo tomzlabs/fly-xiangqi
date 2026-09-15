@@ -1,31 +1,31 @@
 import './style.css';
-import { Chess } from 'chess.js';
+import { Chess, START_FEN, names } from './xiangqi.mjs';
 import { BrainView } from './brain-view.js';
-import { pieceSvg, pieceNames } from './pieces.js';
+import { pieceSvg } from './pieces.js';
 
 const base=import.meta.env.BASE_URL;
 document.querySelector('#app').innerHTML=`
 <div class="shell">
   <header class="topbar">
-    <a class="brand" href="#"><img src="${base}fly.svg" alt=""/><div><strong>fly chess lab</strong><small>连接与落子</small></div></a>
+    <a class="brand" href="#"><img src="${base}xiangqi-fly-logo.png" alt="象棋苍蝇 Logo"/><div><strong>fly xiangqi lab</strong><small>连接与落子</small></div></a>
     <nav aria-label="主导航"><a href="#play">开始对弈</a><a href="#method">计算说明</a><a href="#sources">数据来源 ↗</a></nav>
-    <div class="release"><i></i> EXPERIMENT 0.1</div>
+    <div class="release"><i></i> XIANGQI / 0.2</div>
   </header>
   <section class="intro" id="play">
-    <div><p class="eyebrow">A CONNECTOME AT THE CHESSBOARD</p><h1>你的下一步，<span>它的神经回响。</span></h1><p>真实果蝇连接数据，在你的浏览器中计算。<br class="mobile-break"/>落下一枚棋子，观察信号怎样穿过神经网络。</p></div>
+    <div><p class="eyebrow">A CONNECTOME MEETS XIANGQI</p><h1>楚河汉界，<span>落子有回响。</span></h1><p>真实果蝇连接数据，在你的浏览器中计算。<br class="mobile-break"/>落下一枚棋子，观察信号怎样穿过神经网络。</p></div>
     <div class="intro-aside"><span class="tag" id="runtime"><i></i>正在载入连接组</span><span class="fine">FlyWire v783 · 未训练读出</span></div>
   </section>
   <main class="lab">
-    <section aria-label="国际象棋对弈">
+    <section aria-label="中国象棋对弈">
       <div class="panel">
-        <div class="panel-head"><div class="panel-title"><span class="round-icon">♙</span> 对弈台</div><span class="panel-kicker">HUMAN × CONNECTOME</span></div>
+        <div class="panel-head"><div class="panel-title"><span class="round-icon">兵</span> 中国象棋 · 对弈台</div><span class="panel-kicker">HUMAN × CONNECTOME</span></div>
         <div class="board-wrap">
-          <div class="opponent"><div class="avatar"><img src="${base}fly.svg" alt=""/></div><div class="person"><b>果蝇神经网络</b><span id="fly-color">执黑 · 固定连接，逐步积分</span></div><span class="turn-badge" id="fly-turn">等待输入</span></div>
-          <div class="board-frame"><div class="ranks" id="ranks" aria-hidden="true"></div><div class="board" id="board" role="group" aria-label="棋盘"></div></div>
+          <div class="opponent"><div class="avatar"><img src="${base}xiangqi-fly-logo.png" alt=""/></div><div class="person"><b>果蝇神经网络</b><span id="fly-color">执黑 · 固定连接，逐步积分</span></div><span class="turn-badge" id="fly-turn">等待输入</span></div>
+          <div class="board-frame"><div class="ranks" id="ranks" aria-hidden="true"></div><div class="xiangqi-surface"><svg class="board-lines" viewBox="0 0 900 1000" aria-hidden="true"></svg><div class="board" id="board" role="group" aria-label="中国象棋棋盘，九路十行"></div></div></div>
           <div class="files" id="files" aria-hidden="true"></div>
-          <div class="opponent player-bottom"><div class="avatar human">♙</div><div class="person"><b>你</b><span id="human-color">执白 · 点击棋子，再选择落点</span></div><span class="turn-badge" id="human-turn">你的回合</span></div>
+          <div class="opponent player-bottom"><div class="avatar human">兵</div><div class="person"><b>你</b><span id="human-color">执红 · 点击棋子，再选择落点</span></div><span class="turn-badge" id="human-turn">你的回合</span></div>
         </div>
-        <div class="board-actions"><div class="actions-left"><button id="new-game" class="button primary" disabled>↻ 新对局</button><button id="undo" class="button" disabled>撤回</button><button id="flip" class="button icon-button" aria-label="翻转棋盘" title="翻转棋盘">⇅</button></div><select class="side-select" id="side" aria-label="选择执棋颜色" disabled><option value="w">我执白棋</option><option value="b">我执黑棋</option></select></div>
+        <div class="board-actions"><div class="actions-left"><button id="new-game" class="button primary" disabled>↻ 新对局</button><button id="undo" class="button" disabled>撤回</button><button id="flip" class="button icon-button" aria-label="翻转棋盘" title="翻转棋盘">⇅</button></div><select class="side-select" id="side" aria-label="选择执棋颜色" disabled><option value="w">我执红棋</option><option value="b">我执黑棋</option></select></div>
         <div class="status" id="status" role="status" aria-live="polite"><i class="status-dot"></i><span id="status-text">正在准备神经网络，连接数据只需下载一次。</span></div>
       </div>
       <div class="move-strip"><b>棋谱</b><div class="move-list" id="moves">落子之后，棋谱会记录在这里。</div></div>
@@ -35,7 +35,7 @@ document.querySelector('#app').innerHTML=`
       <div class="brain-stage">
         <div class="brain-canvas" id="brain"></div><div class="brain-corner">DORSAL VIEW<br/>实测锚点 / 非神经形态</div><span class="brain-phase" id="phase">等待计算</span>
         <div class="brain-caption"><span>拖动旋转 · 滚轮缩放</span><span id="brain-caption">亮点仅来自实际放电记录</span></div>
-        <div class="loading-overlay" id="loading"><div class="loading-orbit"><img src="${base}fly.svg" alt=""/></div><b id="loading-title">正在载入一张真实的连接图</b><p id="loading-help">完整网络约 50 MB。下载完成后，棋步计算在本机进行。</p><div class="load-track"><i id="load-bar"></i></div><span class="load-value" id="load-value">正在读取数据清单…</span><button id="retry-load" class="button" hidden>重试载入</button></div>
+        <div class="loading-overlay" id="loading"><div class="loading-orbit"><img src="${base}xiangqi-fly-logo.png" alt=""/></div><b id="loading-title">正在载入一张真实的连接图</b><p id="loading-help">完整网络约 50 MB。下载完成后，棋步计算在本机进行。</p><div class="load-track"><i id="load-bar"></i></div><span class="load-value" id="load-value">正在读取数据清单…</span><button id="retry-load" class="button" hidden>重试载入</button></div>
       </div>
       <div class="legend"><span><i style="--color:#8296c2"></i>视觉回路</span><span><i style="--color:#746c97"></i>中央脑等</span><span><i style="--color:#47a99a"></i>视觉输入</span><span><i style="--color:#b66680"></i>下行 / 运动</span></div>
       <div class="metrics"><div class="metric"><strong id="active">—</strong><span>本次放电神经元</span></div><div class="metric"><strong id="spikes">—</strong><span>累计脉冲数</span></div><div class="metric"><strong id="output-spikes">—</strong><span>下行 / 运动脉冲</span></div><div class="metric"><strong><b id="sim-time" style="font-weight:500">—</b><small>ms</small></strong><span>模型内时间</span></div></div>
@@ -49,12 +49,11 @@ document.querySelector('#app').innerHTML=`
   </section>
   <div class="ablation-result" id="ablation-result" hidden aria-live="polite"></div>
   <div class="about">
-    <section id="method"><p class="eyebrow">INSIDE THE EXPERIMENT</p><h2>真正计算，也明确边界。</h2><p>使用研究作者公开的果蝇神经连接及兴奋／抑制权重，用泄漏整合发放模型（LIF）逐步计算膜电位、延迟传播与放电脉冲。全部 <span id="about-neurons">138,639</span> 个神经元和原始连接都参与模拟。</p><div class="pipeline"><span>棋盘编码</span><i>→</i><span>连接组 · LIF</span><i>→</i><span>神经读出</span><i>→</i><span>合法落子</span></div><ul class="science-list"><li><b>测量数据：</b>连接关系、突触数和神经元锚点来自公开数据；兴奋／抑制符号沿用作者模型。</li><li><b>模型假设：</b>统一的 LIF 参数及时间离散。棋盘到视觉神经元、下行活动到走法的映射由我们定义。</li><li><b>能力边界：</b>读出层尚未学习棋艺，可能走出很差的棋。它是基于连接组的计算实验，不是活体果蝇，也不是生物认知能力的证明。</li></ul><details><summary>膜电位也能影响落子吗？</summary><p>可以。每个输出神经元的特征为：脉冲数 + 平均膜电位偏移 / 7 mV。即使尚未达到放电阈值，经过突触传播的电位变化也能影响线性读出。页面会如实显示零个输出脉冲。</p></details><details><summary>象棋规则与网络各自负责什么？</summary><p>chess.js 只生成合法走法、处理升变和判定终局。固定线性投影仅接收 1,409 个下行／运动神经元的模拟活动。没有象棋引擎、局面搜索、子力评分或将杀辅助。若输出信号为零，系统停止走棋并提示调整实验参数。</p></details></section>
+    <section id="method"><p class="eyebrow">INSIDE THE EXPERIMENT</p><h2>真正计算，也明确边界。</h2><p>使用研究作者公开的果蝇神经连接及兴奋／抑制权重，用泄漏整合发放模型（LIF）逐步计算膜电位、延迟传播与放电脉冲。全部 <span id="about-neurons">138,639</span> 个神经元和原始连接都参与模拟。</p><div class="pipeline"><span>棋盘编码</span><i>→</i><span>连接组 · LIF</span><i>→</i><span>神经读出</span><i>→</i><span>合法落子</span></div><ul class="science-list"><li><b>测量数据：</b>连接关系、突触数和神经元锚点来自公开数据；兴奋／抑制符号沿用作者模型。</li><li><b>模型假设：</b>统一的 LIF 参数及时间离散。棋盘到视觉神经元、下行活动到走法的映射由我们定义。</li><li><b>能力边界：</b>读出层尚未学习棋艺，可能走出很差的棋。它是基于连接组的计算实验，不是活体果蝇，也不是生物认知能力的证明。</li></ul><details><summary>膜电位也能影响落子吗？</summary><p>可以。每个输出神经元的特征为：脉冲数 + 平均膜电位偏移 / 7 mV。即使尚未达到放电阈值，经过突触传播的电位变化也能影响线性读出。页面会如实显示零个输出脉冲。</p></details><details><summary>象棋规则与网络各自负责什么？</summary><p>中国象棋规则层只生成合法走法，检查将军、将死与困毙。固定线性投影仅接收 1,409 个下行／运动神经元的模拟活动。没有象棋引擎、局面搜索、子力评分或将杀辅助。若输出信号为零，系统停止走棋并提示调整实验参数。</p></details><details><summary>中国象棋走法与和棋约定</summary><p>红先黑后。车走直线，马走日且不能蹩腿，相象走田且不能过河；仕士和将帅不出九宫，将帅不能照面。炮隔一子吃子，兵卒过河后可横走、不能后退。无合法走法判负（包括困毙）。本实验采用简化和棋约定：同一局面三次重复或连续 120 半回合未吃子判和，暂不裁定竞赛中的长将、长捉。</p></details></section>
     <section id="sources"><p class="eyebrow">OPEN DATA, INSPECTABLE MOVES</p><h2>每一条连接，都有出处。</h2><div class="source-row"><a href="https://github.com/philshiu/Drosophila_brain_model" target="_blank" rel="noreferrer">Drosophila_brain_model ↗</a><span>Shiu 等 · 模型及 v783 数据</span></div><div class="source-row"><a href="https://github.com/flyconnectome/flywire_annotations" target="_blank" rel="noreferrer">FlyWire annotations ↗</a><span>神经元类型与空间锚点</span></div><div class="source-row"><a href="https://doi.org/10.1038/s41586-024-07763-9" target="_blank" rel="noreferrer">Nature · 2024 ↗</a><span>神经元模型的研究基础</span></div><div class="source-row"><a href="${base}data/manifest.json" target="_blank" rel="noreferrer">本次数据清单 ↗</a><span>固定提交 · 数量 · SHA-256</span></div><div class="hash" id="hash">连接图校验中…</div><div style="display:flex;gap:9px;margin-top:19px;flex-wrap:wrap"><button class="button" id="export" disabled>↓ 导出计算记录</button><button class="button" id="export-audit" disabled>↓ 导出对照实验</button></div><p style="font-size:11px;margin-top:14px">记录包含局面、输入种子、每次脉冲、输出特征、候选分数及模型校验值。下载后可核对实际计算链路。</p><details><summary>载入自定义棋局（FEN）</summary><form id="fen-form" style="margin-top:10px"><input id="fen-input" aria-label="FEN 棋局字符串" style="width:100%;padding:8px;border:1px solid #d4d8e5;border-radius:5px;font-size:11px" placeholder="粘贴完整 FEN 字符串"/><button class="button" id="load-fen" type="submit" style="margin-top:8px" disabled>载入局面</button></form></details></section>
   </div>
-  <footer><span><b>fly chess lab</b> 连接数据来自真实果蝇，棋盘接口来自工程设计。</span><span>本机计算 · 完整连接组 · 可重复实验</span></footer>
-</div>
-<dialog class="modal" id="promotion"><h2>选择升变棋子</h2><div class="promotion-options" id="promotion-options"></div><button class="button" id="cancel-promotion">取消</button></dialog>`;
+  <footer><span><b>fly xiangqi lab</b> 连接数据来自真实果蝇，棋盘接口来自工程设计。</span><span>本机计算 · 完整连接组 · 可重复实验</span></footer>
+</div>`;
 
 const $=id=>document.getElementById(id), fmt=x=>x.toLocaleString('en-US');
 let chess=new Chess(), human='w', flipped=false, selected=null, ready=false, busy=false;
@@ -72,25 +71,24 @@ function controlState() {
 }
 function endMessage() {
   if(chess.isCheckmate())return chess.turn()===human?'将死，神经网络赢了。':'将死，你赢了。';
-  if(chess.isStalemate())return '和棋：无子可动。';
+  if(chess.isStalemate())return chess.turn()===human?'困毙，你无子可动，神经网络赢了。':'困毙，神经网络无子可动，你赢了。';
   if(chess.isThreefoldRepetition())return '和棋：三次重复局面。';
-  if(chess.isInsufficientMaterial())return '和棋：子力不足。';
-  if(chess.isDraw())return '和棋。';
+  if(chess.isDraw())return '和棋：连续 120 半回合未吃子。';
   return null;
 }
 function renderBoard() {
-  const files=(flipped?'hgfedcba':'abcdefgh').split(''), ranks=flipped?[1,2,3,4,5,6,7,8]:[8,7,6,5,4,3,2,1];
+  const files=(flipped?'ihgfedcba':'abcdefghi').split(''), ranks=flipped?[0,1,2,3,4,5,6,7,8,9]:[9,8,7,6,5,4,3,2,1,0];
   const legal=selected?chess.moves({square:selected,verbose:true}):[];
   const history=chess.history({verbose:true}), last=history.at(-1);
   $('board').innerHTML=ranks.flatMap(rank=>files.map(file=>{
     const square=file+rank,piece=chess.get(square),target=legal.some(m=>m.to===square);
-    const classes=['square',((file.charCodeAt(0)-97+rank)%2===1?'dark':''),square===selected?'selected':'',target?'target':'',target&&piece?'capture':'',last&&(last.from===square||last.to===square)?'last':''].filter(Boolean).join(' ');
-    return `<button type="button" class="${classes}" data-square="${square}" aria-label="${square}${piece?' '+(piece.color==='w'?'白':'黑')+pieceNames[piece.type]:' 空格'}${target?'，可走':''}" aria-pressed="${selected===square}">${piece?pieceSvg(piece.type,piece.color):''}</button>`;
+    const classes=['square',square===selected?'selected':'',piece?.type==='k'&&piece.color===chess.turn()&&chess.isCheck()?'in-check':'',target?'target':'',target&&piece?'capture':'',last&&(last.from===square||last.to===square)?'last':''].filter(Boolean).join(' ');
+    return `<button type="button" class="${classes}" data-square="${square}" aria-label="${square}${piece?' '+(piece.color==='w'?'红':'黑')+names[piece.color][piece.type]:' 空格'}${target?'，可走':''}" aria-pressed="${selected===square}">${piece?pieceSvg(piece.type,piece.color):''}</button>`;
   })).join('');
   $('ranks').innerHTML=ranks.map(x=>`<span>${x}</span>`).join('');
-  $('files').innerHTML=files.map(x=>`<span>${x}</span>`).join('');
-  $('fly-color').textContent=`执${human==='w'?'黑':'白'} · 固定连接，逐步积分`;
-  $('human-color').textContent=`执${human==='w'?'白':'黑'} · 点击棋子，再选择落点`;
+  $('files').innerHTML=files.map(x=>`<span>${flipped?x.charCodeAt(0)-96:'九八七六五四三二一'[x.charCodeAt(0)-97]}</span>`).join('');
+  $('fly-color').textContent=`执${human==='w'?'黑':'红'} · 固定连接，逐步积分`;
+  $('human-color').textContent=`执${human==='w'?'红':'黑'} · 点击棋子，再选择落点`;
   $('fly-turn').textContent=chess.isGameOver()?'对局结束':busy?'计算中':chess.turn()!==human?'等待计算':'等待输入';
   $('human-turn').textContent=chess.isGameOver()?'对局结束':chess.turn()===human?'你的回合':'等待对手';
   const san=chess.history();
@@ -139,7 +137,7 @@ async function flyMove() {
     showResult(result);
     if(result.selected){
       const uci=result.selected.uci;
-      chess.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]});
+      chess.move({from:uci.slice(0,2),to:uci.slice(2,4)});
       status(endMessage()||`神经网络走了 ${result.selected.san}。${chess.isCheck()?'你被将军了。':'轮到你了。'}`);
     } else status('输出神经元没有产生可读信号。可调长模拟时长后重试，或撤回这步。',true);
   }catch(e){status(`计算未完成：${e.message}`,true);}
@@ -148,7 +146,7 @@ async function flyMove() {
 async function newGame() {
   if(busy||!ready)return;
   chess=new Chess();human=$('side').value;flipped=human==='b';selected=null;
-  clearTelemetry();renderBoard();status(human==='w'?'连接组已就绪。你执白棋，请先落子。':'连接组执白，正在准备第一步。');
+  clearTelemetry();renderBoard();status(human==='w'?'连接组已就绪。你执红棋，请先落子。':'连接组执红，正在准备第一步。');
   await flyMove();
 }
 async function makeMove(move) {
@@ -156,26 +154,15 @@ async function makeMove(move) {
   if(chess.isGameOver()){status(endMessage());return;}
   await flyMove();
 }
-let promotionMoves=[];
 $('board').addEventListener('click',async e=>{
   const square=e.target.closest('[data-square]')?.dataset.square;
   if(!square||!ready||busy||chess.isGameOver()||chess.turn()!==human)return;
   if(selected){
     const moves=chess.moves({square:selected,verbose:true}).filter(m=>m.to===square);
-    if(moves.length>1){
-      promotionMoves=moves;
-      $('promotion-options').innerHTML=['q','r','b','n'].map(p=>`<button data-promotion="${p}" aria-label="升变为${pieceNames[p]}">${pieceSvg(p,human)}${pieceNames[p]}</button>`).join('');
-      $('promotion').showModal();return;
-    }
     if(moves.length){await makeMove(moves[0]);return;}
   }
   selected=selected===square?null:chess.get(square)?.color===human?square:null;renderBoard();
 });
-$('promotion-options').onclick=async e=>{
-  const type=e.target.closest('[data-promotion]')?.dataset.promotion;if(!type)return;
-  const move=promotionMoves.find(m=>m.promotion===type);$('promotion').close();await makeMove(move);
-};
-$('cancel-promotion').onclick=()=>$('promotion').close();
 $('new-game').onclick=newGame;$('side').onchange=newGame;
 $('flip').onclick=()=>{flipped=!flipped;renderBoard();};
 $('undo').onclick=()=>{
@@ -224,8 +211,8 @@ function download(value,name) {
   const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),manifest,eventFormat:'flat [step, neuronIndex, ...]; time_ms = step * 0.1; root IDs indexed by data/neurons.json.gz',...value},(key,v)=>ArrayBuffer.isView(v)?Array.from(v):v,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-$('export').onclick=()=>lastResult&&download({trial:lastResult},'fly-chess-trial.json');
-$('export-audit').onclick=()=>lastAudit&&download({audit:lastAudit},'fly-chess-ablation.json');
+$('export').onclick=()=>lastResult&&download({trial:lastResult},'fly-xiangqi-trial.json');
+$('export-audit').onclick=()=>lastAudit&&download({audit:lastAudit},'fly-xiangqi-ablation.json');
 function boot() {
   worker?.terminate();ready=false;pending=null;$('retry-load').hidden=true;
   worker=new Worker(new URL('./worker.js',import.meta.url),{type:'module'});
@@ -261,4 +248,17 @@ function boot() {
   worker.postMessage({type:'init'});
 }
 $('retry-load').onclick=boot;
+// Grid intersections, river break, palaces and traditional cannon/pawn marks.
+const lines=[];
+for(let y=50;y<=950;y+=100)lines.push(`<path d="M50 ${y}H850"/>`);
+for(let x=50;x<=850;x+=100)lines.push(`<path d="M${x} 50V450 M${x} 550V950"/>`);
+lines.push('<path d="M50 450V550 M850 450V550 M350 50L550 250 M550 50L350 250 M350 750L550 950 M550 750L350 950"/>');
+for(const [x,y] of [[150,250],[750,250],[150,750],[750,750],...[50,250,450,650,850].flatMap(x=>[[x,350],[x,650]])]){
+  for(const dx of [-1,1])for(const dy of [-1,1])if(x+dx*22>30&&x+dx*22<870)lines.push(`<path d="M${x+dx*22} ${y+dy*7}H${x+dx*7}V${y+dy*22}"/>`);
+}
+document.querySelector('.board-lines').innerHTML=`<g fill="none" stroke="currentColor" stroke-width="1.8">${lines.join('')}</g><g fill="currentColor" font-size="38" font-family="Kaiti SC, STKaiti, KaiTi, serif" text-anchor="middle" letter-spacing="12"><text x="250" y="513">楚河</text><text x="650" y="513">汉界</text></g>`;
+$('fen-input').placeholder=START_FEN;
+window.render_game_to_text=()=>JSON.stringify({coordinates:'a0 = red left corner; files a–i, ranks 0–9 toward black',fen:chess.fen(),turn:chess.turn()==='w'?'red':'black',human:human==='w'?'red':'black',ready,busy,selected,legalTargets:selected?chess.moves({square:selected,verbose:true}).map(m=>m.to):[],check:chess.isCheck(),gameOver:chess.isGameOver(),history:chess.history(),status:$('status-text').textContent});
+window.advanceTime=()=>view.renderer?.render(view.scene,view.camera);
+document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='f'&&!/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen?.();}});
 renderBoard();boot();

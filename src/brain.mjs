@@ -1,8 +1,8 @@
-import { Chess } from 'chess.js';
+import { Chess } from './xiangqi.mjs';
 
 export const MODEL = Object.freeze({ id: 'fly-chess-lif-v1', dtMs: 0.1, restMv: -52, thresholdMv: -45,
   tauMembraneMs: 20, tauSynapseMs: 5, refractoryMs: 2.2, delayMs: 1.8, weightMv: 0.275,
-  inputMv: 68.75, inputHz: 180, adapter: 'piece-square-v1', readout: 'fixed-projection-v1-untrained' });
+  inputMv: 68.75, inputHz: 180, adapter: 'xiangqi-90x14-v1', readout: 'fixed-projection-v1-untrained' });
 
 export function hash(text) {
   let h = 2166136261;
@@ -16,20 +16,20 @@ export function mix(x) {
 }
 
 export function encodeBoard(fen, sensory) {
-  const chess = new Chess(fen), active = new Uint8Array(768);
+  const chess = new Chess(fen), active = new Uint8Array(1260);
   for (const row of chess.board()) for (const piece of row) if (piece) {
-    const square = piece.square.charCodeAt(0) - 97 + (Number(piece.square[1])-1)*8;
-    const channel = 'pnbrqk'.indexOf(piece.type) + (piece.color === chess.turn() ? 0 : 6);
-    active[square*12+channel] = 1;
+    const square = piece.square.charCodeAt(0) - 97 + Number(piece.square[1])*9;
+    const channel = 'pnbrack'.indexOf(piece.type) + (piece.color === chess.turn() ? 0 : 7);
+    active[square*14+channel] = 1;
   }
-  return sensory.flatMap((id, index) => active[index % 768] ? [{ id, hz: MODEL.inputHz, channel: index % 768 }] : []);
+  return sensory.flatMap((id, index) => active[index % 1260] ? [{ id, hz: MODEL.inputHz, channel: index % 1260 }] : []);
 }
 
 export function rankMoves(fen, outputs, features) {
   const moves = new Chess(fen).moves({ verbose: true });
   const norm = Math.sqrt(features.reduce((sum, x) => sum+x*x, 0));
   const candidates = moves.map(move => {
-    const uci = move.from + move.to + (move.promotion || '');
+    const uci = move.from + move.to;
     const action = hash(uci);
     let score = 0;
     for (let i=0; i<outputs.length; i++) {
@@ -92,6 +92,6 @@ export class NeuralEngine {
       model:MODEL, graphSha256:manifest.graphSha256, wasmSha256:this.wasmSha256,
       ...ranking, inputs, outputIndices:meta.outputs, outputRootIds:meta.outputs.map(i=>meta.ids[i]),
       outputCounts, outputFeatures, chunks, events:flat,
-      note:'Untrained fixed linear projection of simulated output activity; chess.js only supplies legal moves. No search, material score, mate assistance, or chess engine.' };
+      note:'Untrained fixed linear projection of simulated output activity; Xiangqi rules adapter only supplies legal moves. No search, material score, mate assistance, or chess engine.' };
   }
 }

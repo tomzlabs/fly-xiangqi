@@ -59,8 +59,8 @@ def main():
     annotations = pd.read_csv(RAW / 'Supplemental_file1_neuron_annotations.tsv', sep='\t', low_memory=False).set_index('root_id').reindex(ids)
     visual = np.flatnonzero((annotations.super_class == 'sensory') & (annotations.cell_class == 'visual'))
     descending = np.flatnonzero(annotations.super_class.isin(['descending', 'motor']))
-    assert len(visual) >= 768 and len(descending) > 100
-    # Evenly spread the artificial 768 input channels over real visual sensory IDs.
+    assert len(visual) >= 1260 and len(descending) > 100
+    # Evenly spread the artificial 1260 input channels over real visual sensory IDs.
     # This is a chess adapter, not a claim of biological retinotopy.
     sensory = visual.tolist()
     coords = annotations[['pos_x', 'pos_y', 'pos_z']].to_numpy(dtype=float) * [4, 4, 40]
@@ -91,7 +91,7 @@ def main():
         'sources': records,
         'transform': 'All author neurons and edges retained. Stable CSR sort only. Signed counts are multiplied by 0.275 mV at runtime. Annotation joins do not change the graph.',
         'reference': 'https://doi.org/10.1038/s41586-024-07763-9',
-        'annotationsReference': 'https://doi.org/10.1038/s41586-024-07686-5',
+        'annotationsReference': 'https://doi.org/10.1038/s41586-024-012606-5',
     }
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     (ROOT / 'docs/shiu-model-LICENSE.txt').write_text((RAW / 'LICENSE').read_text())

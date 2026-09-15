@@ -3,7 +3,7 @@ import { gunzipSync } from 'node:zlib';
 import assert from 'node:assert/strict';
 import { NeuralEngine } from '../src/brain.mjs';
 const file=process.argv[2];
-if(!file)throw new Error('Usage: node scripts/verify-record.mjs path/to/fly-chess-trial.json');
+if(!file)throw new Error('Usage: node scripts/verify-record.mjs path/to/fly-xiangqi-trial.json');
 const record=JSON.parse(readFileSync(file)), trial=record.trial;
 if(!trial)throw new Error('Expected a single-trial export');
 const manifest=JSON.parse(readFileSync('public/data/manifest.json'));

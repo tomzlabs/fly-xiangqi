@@ -1,13 +1,13 @@
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { NeuralEngine } from '../src/brain.mjs';
-import { Chess } from 'chess.js';
+import { Chess } from '../src/xiangqi.mjs';
 const bytes=p=>readFileSync(p);
 const manifest=JSON.parse(bytes('public/data/manifest.json'));
 const meta=JSON.parse(gunzipSync(bytes('public/data/neurons.json.gz')));
 const wasm=JSON.parse(bytes('public/wasm/manifest.json'));
 const engine=await NeuralEngine.create(bytes('public/wasm/fly_brain.wasm'),gunzipSync(bytes('public/data/connectome.bin.gz')),meta,manifest,wasm.sha256);
-const game=new Chess(); game.move('e4');
+const game=new Chess(); game.move('e3e4');
 const fen=game.fen();
 const result=await engine.run({fen});
 const repeat=await engine.run({fen});

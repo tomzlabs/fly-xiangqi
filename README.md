@@ -1,19 +1,26 @@
-# Fly Chess Lab · 连接与落子
+# Fly Xiangqi Lab · 中国象棋与连接组
 
-[在线体验](https://tolatolatop.github.io/fly-chess/) · [GitHub 源码](https://github.com/tolatolatop/fly-chess) · [构建与部署记录](https://github.com/tolatolatop/fly-chess/actions/workflows/pages.yml)
+基于 [tolatolatop/fly-chess](https://github.com/tolatolatop/fly-chess) 改造的中国象棋版本，保留真实果蝇连接组、Rust/WASM 计算与对照实验。公开源码：[tomzlabs/fly-xiangqi](https://github.com/tomzlabs/fly-xiangqi)。
 
 一个已经能运行的果蝇连接组下棋实验。完整 FlyWire v783 网络在浏览器的 Web Worker 中用 **Rust → WebAssembly** 计算，不需要计算后端。棋盘、神经元点云、活动记录、棋步评分和断开突触的对照实验都可在页面查看。
 
-**“真实”的范围：** 真实来源的连接图和实际执行的神经元数值模拟。不是活体果蝇，不是完整生物仿真，也没有证明果蝇理解国际象棋。棋盘编码和读出映射是人为定义的接口。当前读出层是**固定、尚未训练的线性投影**，棋力很弱。
+**“真实”的范围：** 真实来源的连接图和实际执行的神经元数值模拟。不是活体果蝇，不是完整生物仿真，也没有证明果蝇理解中国象棋。棋盘编码和读出映射是人为定义的接口。当前读出层是**固定、尚未训练的线性投影**，棋力很弱。
+
+## 中国象棋玩法
+
+- 红先黑后；点击己方棋子，再点击提示落点。支持执红／执黑、翻转棋盘、撤回一轮、新对局、中文棋谱和 FEN 残局。
+- 棋盘是九路十行，棋子在交叉点上。参考 [世界象棋联合会规则](https://www.wxf-xiangqi.org/images/wxf-rules/2018_World_XiangQi_Rules_English2018.pdf) 的基本走法；无合法走法的一方判负，包括困毙。
+- **实验版和棋约定：** 同一局面（含行棋方）三次重复，或连续 120 半回合未吃子即判和。未实现竞赛长将、长捉裁定；这不是完整竞赛裁判程序。不会套用国际象棋的子力不足判和。
+- FEN 使用十行、每行九路：`r n b a k c p` 表示车马象士将炮卒，大写为红方，`w` 为红方行棋，`b` 为黑方。坐标 `a0` 是红方左下角，`i9` 是黑方左下角；完整初始局面见 `src/xiangqi.mjs` 的 `START_FEN`。
+- 每步仍由真实连接组输出选择，固定读出层尚未训练，棋力有限。
 
 ## 运行
 
-Node.js 22.12+、Python 3.11+。仓库包含编译好的 WASM；首次克隆后，用固定来源重建连接数据：
+Node.js 22.12+、Python 3.11+。仓库包含编译好的 WASM；首次克隆后，从固定 Release 下载并校验连接数据：
 
 ```bash
 npm ci
-python -m pip install -r scripts/requirements-data.txt
-npm run data
+npm run data:fetch
 npm run dev -- --port 5188
 ```
 
@@ -28,15 +35,17 @@ npm run preview -- --port 5189
 
 `dist/` 可由普通静态服务器托管。已经验证带 `Content-Encoding: gzip` 和直接返回 gzip 文件两种数据响应方式。不需要服务器端 Python、GPU、数据库、API 密钥或 WebSocket。首次资源加载受网速影响。
 
-GitHub Pages 通过 `.github/workflows/pages.yml` 自动部署。每次推送到 `main` 都会从固定提交下载并校验原始数据、重建完整连接资源、重新编译 Rust/WASM、运行数值和全网络对照测试，再发布静态文件。大型生成资源不进入 Git 历史，但会完整包含在 Pages 发布产物中。无需上传 `node_modules`、原始数据缓存或手动维护 `gh-pages` 分支。
+## GitHub 与 Vercel 发布
 
-在本地验证 GitHub Pages 的项目子路径：
+源码以公开 Fork 形式发布到 [tomzlabs/fly-xiangqi](https://github.com/tomzlabs/fly-xiangqi)，保留上游历史与来源。
 
-```bash
-FLY_BASE_PATH=/fly-chess/ npm run build:web
-FLY_BASE_PATH=/fly-chess/ npm run preview -- --port 5190
-FLY_TEST_URL=http://localhost:5190/fly-chess/ npm run test:browser
-```
+Vercel 使用 `vercel.json`：`npm ci` → `npm run data:fetch` → `npm run build:web`，输出目录 `dist`，Node.js 22。浏览器中的计算完全本地运行，无需 API 密钥。
+
+约 50 MB 的连接组资源存储在本仓库的 [connectome-v783 Release](https://github.com/tomzlabs/fly-xiangqi/releases/tag/connectome-v783)，不进入 Git 历史。构建脚本逐文件核对大小及 SHA-256，下载失败或校验失败会停止构建。GitHub Actions 运行规则、Rust 数值测试、静态构建以及全网络重复性／断连验证。
+
+### 许可范围
+
+本次原创新增代码与修改采用 MIT，见 [LICENSE](LICENSE)。上游应用没有声明项目许可证，其原有代码不在本次 MIT 授权范围内；研究数据、字体与第三方库保留各自条款。因此不能将整个 Fork 标为统一 MIT 项目。来源见 [ATTRIBUTION](docs/ATTRIBUTION.md)。
 
 修改 Rust 计算核心后重新编译：
 
@@ -73,11 +82,11 @@ npm run data
 
 ## 一步棋如何产生
 
-1. `chess.js` 处理规则、合法走法、王车易位、吃过路兵、四种升变和终局判定。
-2. 将当前棋盘编码为 64 格 × 12 种相对己方／敌方棋子通道。按固定索引把通道分配给真实视觉感觉神经元；占用通道接受 180 Hz 的有种子泊松式刺激。**这不等同于真实视觉转导，也不是视网膜空间映射。**
+1. `src/xiangqi.mjs` 处理中国象棋合法走法：车、马、相象、仕士、将帅、炮、兵卒；检查蹩马腿、塞象眼、过河、九宫、将帅照面、自陷将军、将死和困毙。规则层不提供局面评分。
+2. 将当前棋盘编码为 90 个交叉点 × 14 种相对己方／敌方棋子通道。按固定索引把通道分配给真实视觉感觉神经元；占用通道接受 180 Hz 的有种子泊松式刺激。**这不等同于真实视觉转导，也不是视网膜空间映射。**
 3. 从静息态开始，以 0.1 ms 步长运行 60 / 120 / 240 ms 的全网络 LIF 模型。每一步计算所有神经元的膜电位，只有放电节点触发稀疏突触传播。
 4. 读出 1,409 个下行／运动神经元的特征：`脉冲数 + 平均膜电位偏移 / 7 mV`。因此输出神经元不放电时，亚阈值传播也可能影响结果。
-5. 每个合法动作使用固定、由动作编码与神经元索引生成的 ±1 权重，对该特征向量做线性投影；取最高分，相同分数按 UCI 字符串排序。**该投影未训练，没有棋艺知识。**
+5. 每个合法动作使用固定、由动作编码与神经元索引生成的 ±1 权重，对该特征向量做线性投影；取最高分，相同分数按 UCCI 坐标字符串排序。**该投影未训练，没有棋艺知识。**
 6. 输出信号范数为零时，拒绝凭空选择走法。页面允许调整时长或种子后重试。
 
 棋盘信息不能绕过神经元模拟直接进入局面评分。没有 Stockfish、Minimax、MCTS、子力分数、开局库或将杀辅助。整个棋艺策略仍然是人为设计的读出器；真实连接组计算不意味着天然会下好棋。
@@ -93,17 +102,16 @@ npm test                      # Rust 数值测试 + JS 规则/读出/文件校�
 npm run benchmark             # 全图实际 WASM、重复性和断连对照
 python -m pip install brian2
 npm run test:brian2            # 独立 Brian2 数值对照
-python -m pip install playwright
-python -m playwright install chromium
+npx playwright install chromium
 npm run test:browser           # 需先启动 5188 端口页面
 ```
 
 已验证的范围：
 
 - 小回路中的解析衰减、兴奋／抑制、传播延迟、无输入静默、可重复性、断连行为。
-- 独立 Brian2 对照：4 个神经元、200 ms、136 次脉冲的时间和神经元编号完全一致，最终膜电位最大误差约 `2.56e-13 mV`。**这不是全脑生理有效性的验证。**
-- 全图真实 WASM 测试：`e4` 后种子 42、120 ms 模拟，10,068 个脉冲、590 个放电神经元、下行／运动脉冲 0；读出仍有亚阈值信号。断连后仅输入群放电，输出信号为 0，不产生走法。
-- Linux Node 22 的本次基准：120 ms 神经模拟约 0.41 秒核心计算、约 180 MiB WASM 线性内存。浏览器、图形、解压、JS 对象会额外占用内存；这是本机测量，不是所有手机的性能承诺。
+- 上游保留的独立 Brian2 对照记录（本次未重跑）：4 个神经元、200 ms、136 次脉冲的时间和神经元编号完全一致，最终膜电位最大误差约 `2.56e-13 mV`。**这不是全脑生理有效性的验证。**
+- 全图真实 WASM 测试：`e3e4`（兵五进一）后种子 42、120 ms 模拟，6,108 个脉冲、367 个放电神经元、下行／运动脉冲 2；网络选择 `b7a7`（砲2平1）。断连后仅输入群放电，输出信号为 0，不产生走法。
+- macOS Node 22 的本次基准：120 ms 神经模拟约 0.74 秒核心计算、约 180 MiB WASM 线性内存。浏览器、图形、解压、JS 对象会额外占用内存；这是本机测量，不是所有手机的性能承诺。
 
 详细结果见 `docs/benchmark.json`、`docs/brian2-validation.json`，浏览器验收结果在 `test-results/browser-check.json`。
 

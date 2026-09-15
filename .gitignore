@@ -6,3 +6,11 @@ native/target/
 test-results/
 __pycache__/
 *.log
+.vercel/
+.env*
+public/data/*.download
+.vercel
+
+progress.md
+
+!public/xiangqi-fly-logo.png

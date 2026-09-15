@@ -1,0 +1,10 @@
+.git
+node_modules
+dist
+native/target
+data/raw
+test-results
+public/data/*.gz
+public/data/*.download
+.env*
+progress.md

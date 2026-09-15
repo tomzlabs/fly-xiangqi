@@ -3,18 +3,18 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
-import { Chess } from 'chess.js';
+import { Chess } from '../src/xiangqi.mjs';
 import { encodeBoard, rankMoves } from '../src/brain.mjs';
 
 test('board encoder distinguishes pieces, location and side to move without a chess evaluation',()=>{
-  const sensory=Array.from({length:768},(_,i)=>i),chess=new Chess();
+  const sensory=Array.from({length:1260},(_,i)=>i),chess=new Chess();
   const before=encodeBoard(chess.fen(),sensory);assert.equal(before.length,32);
-  chess.move('e4');const after=encodeBoard(chess.fen(),sensory);assert.equal(after.length,32);
+  chess.move('e3e4');const after=encodeBoard(chess.fen(),sensory);assert.equal(after.length,32);
   assert.notDeepEqual(before,after);
   assert(before.every(x=>x.hz===180));assert(after.every(x=>x.hz===180));
 });
-test('zero neural signal refuses to invent a move, including forced mate positions',()=>{
-  const result=rankMoves('7k/6pp/5KQ1/8/8/8/8/8 w - - 0 1',[1,2,3],[0,0,0]);
+test('zero neural signal refuses to invent a move',()=>{
+  const result=rankMoves(new Chess().fen(),[1,2,3],[0,0,0]);
   assert.equal(result.selected,null);assert.equal(result.signalNorm,0);
   assert(result.candidates.every(x=>x.score===0));
 });
@@ -23,13 +23,11 @@ test('readout is causally responsive and only ranks legal moves',()=>{
   const first=rankMoves(chess.fen(),outputs,features);
   const reversed=rankMoves(chess.fen(),outputs,features.map(x=>-x));
   assert.notEqual(first.selected.uci,reversed.selected.uci);
-  const legal=new Set(chess.moves({verbose:true}).map(m=>m.from+m.to+(m.promotion||'')));
+  const legal=new Set(chess.moves({verbose:true}).map(m=>m.from+m.to));
   assert(first.candidates.every(m=>legal.has(m.uci)));
 });
-test('all four promotion choices remain available, and terminal positions have none',()=>{
-  const r=rankMoves('7k/P7/8/8/8/8/8/7K w - - 0 1',[1],[1]);
-  assert.equal(r.candidates.filter(m=>m.uci.startsWith('a7a8')).length,4);
-  assert.equal(rankMoves('7k/6Q1/5K2/8/8/8/8/8 b - - 0 1',[1],[1]).selected,null);
+test('terminal Xiangqi positions return no candidate',()=>{
+  assert.equal(rankMoves('R3k4/4R4/9/9/9/9/9/9/9/4K4 b - - 0 1',[1],[1]).selected,null);
 });
 test('distributed data and WASM match the manifest hashes',()=>{
   const sha=x=>createHash('sha256').update(x).digest('hex');

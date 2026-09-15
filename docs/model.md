@@ -37,15 +37,15 @@ Order is membrane integration → threshold detection `v > -45` → due synaptic
 
 External drive uses xorshift32, one draw per stimulated neuron per step, with event probability `rateHz * h / 1000`; an event adds 68.75 mV to v. This is the finite time-step Bernoulli approximation used for a single Poisson source; it is not exact continuous-time Poisson sampling. The maximum per-step probability in the chess adapter is 0.018. Draw order follows the source neuron order, and the same inputs/seed are used in the disconnected control.
 
-## Chess interface (artificial)
+## Xiangqi interface (artificial)
 
-Square index is file + 8×(rank−1), channel is square×12 + piece type (`pnbrqk`) + 0 for side to move / 6 for opponent. Visual sensory neuron number j in the annotation-selected list receives channel j mod 768. Only occupied channels are stimulated at 180 Hz. This is an artificial injection into visual sensory neurons, not a fly visual model, not natural image processing, and not a biological retinal map.
+Square index is file + 9×rank (files a–i, ranks 0–9), channel is square×14 + piece type (`pnbrack`) + 0 for side to move / 7 for opponent. Visual sensory neuron number j in the annotation-selected list receives channel j mod 1260. Only occupied channels are stimulated at 180 Hz. This is an artificial injection into visual sensory neurons, not a fly visual model, not natural image processing, and not a biological retinal map.
 
 Output is restricted to annotations `descending` and `motor`. Those indices are disjoint from the input set. Feature i is spike count i plus the time-average of `(v_i+52)/7`. The voltage average includes all post-event states in the trial and includes negative subthreshold effects.
 
-For each legal UCI action, `rankMoves` generates a reproducible ±1 coefficient for each output neuron with a fixed integer mixing function and projects the feature vector onto those coefficients, normalized by sqrt(output count). No coefficient is learned. This arbitrary decoder often produces poor chess; no ELO, expertise, or evolved chess knowledge is implied. It also means the action mapping is not biologically meaningful. With near-zero feature norm, no action is selected. Ties are resolved by ascending UCI string, explicitly outside the neural model.
+For each legal UCCI action, `rankMoves` generates a reproducible ±1 coefficient for each output neuron with a fixed integer mixing function and projects the feature vector onto those coefficients, normalized by sqrt(output count). No coefficient is learned. This arbitrary decoder often produces poor chess; no ELO, expertise, or evolved chess knowledge is implied. It also means the action mapping is not biologically meaningful. With near-zero feature norm, no action is selected. Ties are resolved by ascending UCCI string, explicitly outside the neural model.
 
-Chess.js provides legality and game termination. There is no direct board-evaluation feature, no stockfish process, no opening lookup, no search tree, and no mate-in-one override. All scored action preferences depend on the output feature vector.
+The local Xiangqi adapter (`xiangqi-90x14-v1`) provides legality and game termination, including stalemate as a loss. The experiment uses simplified threefold-repetition / 120 non-capture halfmove draws, without tournament perpetual-check or chase adjudication. There is no direct board-evaluation feature, no stockfish process, no opening lookup, no search tree, and no mate-in-one override. All scored action preferences depend on the output feature vector.
 
 ## Telemetry and intervention
 
