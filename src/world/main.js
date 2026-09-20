@@ -1,16 +1,19 @@
 import './style.css';
+import {mountFunding} from './funding.js';
 import {WorldView} from './view.js';
 import {createWorld,sense,advanceWorld,snapshot,makeClip,LABELS,WORLD_MODEL} from './simulation.mjs';
 
 const base=import.meta.env.BASE_URL;
 document.getElementById('app').innerHTML=`
-<header><a class="brand" href="${base}"><strong>蝇境</strong><span>THE FLY OBSERVATORY</span></a><nav><a href="#film">视频片段</a><a href="https://github.com/tomzlabs/fly-xiangqi" target="_blank" rel="noreferrer">GitHub ↗</a></nav></header>
+<header><a class="brand" href="${base}"><strong>蝇境</strong><span>THE FLY OBSERVATORY</span></a><nav><a href="#funding">为世界续时</a><a href="#film">视频片段</a><a href="https://github.com/tomzlabs/fly-xiangqi" target="_blank" rel="noreferrer">GitHub ↗</a></nav></header>
 <main><div class="intro"><div><p class="eyebrow">A SMALL WORLD, STILL UNFOLDING</p><h1>一只果蝇，正在经历此刻。</h1></div><span>实验 001<br>苔藓 · 浆果 · 光</span></div>
 <div class="layout"><section><div class="stage" id="stage"><div class="stage-label" id="stage-label">实时模拟 · 连接组加载中</div><div class="stage-bottom"><strong id="action">世界已就绪</strong><span id="position">X −1.80 / Z +0.80</span></div></div><div class="controls"><button id="pause" class="primary" disabled>暂停世界</button><button id="camera" aria-pressed="false">跟随果蝇</button><button id="record" disabled>录制 30 秒</button><button id="export" disabled>导出分镜</button></div></section>
 <aside class="side"><h2>此刻，正在发生</h2><p class="status" id="status" role="status">正在加载完整连接组。首次打开需要下载约 50 MB。</p><div class="metrics"><div><strong id="world-time">00:00</strong><span>世界时间</span></div><div><strong id="spikes">—</strong><span>本轮真实脉冲</span></div><div><strong id="neural-time">0.00 s</strong><span>神经模型时间</span></div><div><strong id="energy">80%</strong><span>模拟能量</span></div></div><div><label class="field">光照强度<input id="light" type="range" min="0" max="100" value="70"/><small>改变输入，观察行为的变化。</small></label><button id="food">移动浆果</button></div><ul class="events" id="events"><li>等待第一轮神经活动。</li></ul></aside></div>
 <section class="section" id="film"><div><p class="eyebrow">FROM BEHAVIOR TO FILM</p><h2>世界继续，故事继续。</h2><p>每 4 秒模拟生成一段分镜。导出后可接入视频生成，生成好的片段按顺序播放。</p></div><div><div class="clips" id="clips"><span class="empty">第一段分镜正在积累行为记录…</span></div><label class="upload">载入视频片段<input id="videos" type="file" accept="video/*" multiple/></label><p id="video-status" role="status" style="margin-top:12px">尚未接入付费视频生成。上方是实时模拟画面。</p><div class="video-wrap" id="video-wrap" hidden><video id="player" controls playsinline preload="auto"></video></div></div></section>
+<section class="section" id="funding"></section>
 <details><summary>这只果蝇，如何行动？</summary><p>138,639 个神经元的连接组参与逐步计算。连续窗口保留膜电位、突触电流、延迟事件和随机数状态。环境的光照、浆果距离、边界与能量，被人工映射到感觉输入；固定、未训练的读出层将输出映射成移动、转向或停留。这些映射尚未经过生物行为验证，画面是工程模拟。</p><p>世界时间与神经模型时间按 1:1 推进，计算较慢时播放也会放慢。动作之间的视觉过渡经过平滑。模拟仅在此页面打开时运行，刷新会重新开始；分镜仅保留最近 60 段。生成视频是对行为的艺术呈现，不代表读取果蝇的主观体验。付费生成需要单独配置服务和上限。</p></details>
 <footer><span>蝇境 / 连接组驱动的微观世界实验</span><a href="https://x.com/okmetom" target="_blank" rel="noreferrer">@okmetom ↗</a></footer></main>`;
+mountFunding();
 const $=id=>document.getElementById(id);
 const view=new WorldView($('stage'));
 const state=createWorld();let previous={...state},lastResult=null,paused=false,ready=false,inflight=false,lastUpdate=performance.now(),windowMs=850;
