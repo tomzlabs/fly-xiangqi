@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+import {NeuralEngine} from '../src/brain.mjs';
+import {ContinuousBrain,createWorld,sense,advanceWorld,snapshot,makeClip} from '../src/world/simulation.mjs';
+const read=p=>readFileSync(p);
+const meta=JSON.parse(gunzipSync(read('public/data/neurons.json.gz'))),manifest=JSON.parse(read('public/data/manifest.json'));
+const wm=JSON.parse(read('public/wasm/manifest.json'));
+const engine=await NeuralEngine.create(read('public/wasm/fly_brain.wasm'),gunzipSync(read('public/data/connectome.bin.gz')),meta,manifest,wm.sha256);
+function run(transmission=true){const brain=new ContinuousBrain(engine);if(!transmission)engine.e.reset(42,0);const state=createWorld(),results=[];for(let i=0;i<8;i++){const r=brain.step(sense(state));advanceWorld(state,r);results.push(r);}return {state,results};}
+const a=run(),b=run(),lesion=run(false);
+assert.deepEqual(a,b,'continuous simulation must reproduce from the same seed');
+assert.equal(a.results.at(-1).neuralMs,960);
+assert.ok(a.results.some(r=>r.signal>0));
+assert.ok(lesion.results.every(r=>r.signal===0),'disconnected network must lose motor output');
+assert.ok(a.results[1].spikes!==a.results[0].spikes,'next window should not repeat a reset trial');
+const clip=makeClip(snapshot(createWorld()),snapshot(a.state,a.results.at(-1)),1);
+assert.ok(clip.prompt.includes(a.state.action));
+mkdirSync('test-results/world',{recursive:true});writeFileSync('test-results/world/plan.json',JSON.stringify({version:1,clips:[clip]},null,2));
+console.log(JSON.stringify({deterministic:true,continuous:true,disconnectedSignal:lesion.results.at(-1).signal,actions:a.results.map(r=>r.action),signals:a.results.map(r=>r.signal),state:a.state},null,2));

@@ -8,7 +8,7 @@ document.querySelector('#app').innerHTML=`
 <div class="shell">
   <header class="topbar">
     <a class="brand" href="#"><img src="${base}xiangqi-fly-logo.png" alt="蝇弈 Logo"/><div><strong>蝇弈</strong><small>连接与落子</small></div></a>
-    <nav aria-label="主导航"><a href="#play">开始对弈</a><a href="#method">计算说明</a><a href="#sources">数据来源 ↗</a></nav>
+    <nav aria-label="主导航"><a href="#play">开始对弈</a><a href="#method">计算说明</a><a href="#sources">数据来源 ↗</a><a href="${base}world/">蝇境 ↗</a></nav>
     <div class="release"><i></i> XIANGQI / 0.2</div>
   </header>
   <section class="intro" id="play">

@@ -1,6 +1,8 @@
 import { NeuralEngine } from './brain.mjs';
+import { ContinuousBrain } from './world/simulation.mjs';
 
 let engine, busy=false;
+let worldBrain;
 const sha = async bytes => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)), b=>b.toString(16).padStart(2,'0')).join('');
 const base=import.meta.env.BASE_URL;
 async function get(path) {
@@ -49,6 +51,14 @@ self.onmessage=async ({data}) => {
   busy=true;
   try {
     if (data.type==='init') await init();
+    else if(data.type==='world-start' && engine) {
+      worldBrain=new ContinuousBrain(engine,data.seed||42);
+      postMessage({type:'world-started'});
+    }
+    else if(data.type==='world-step' && worldBrain) {
+      const result=worldBrain.step(data.channels);
+      postMessage({type:'world-result',result});
+    }
     else if (data.type==='run' && engine) {
       const result=await engine.run(data.options,chunk => postMessage({type:'chunk',id:data.id,...chunk}),()=>new Promise(r=>setTimeout(r,0)));
       postMessage({type:'result',id:data.id,result},[result.events.buffer]);

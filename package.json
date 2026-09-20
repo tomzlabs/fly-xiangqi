@@ -15,7 +15,8 @@
     "test:browser": "node scripts/browser-check.mjs",
     "test:brian2": "python scripts/verify_brian2.py",
     "test:rules": "node --test tests/*.test.mjs",
-    "data:fetch": "node scripts/fetch-data.mjs"
+    "data:fetch": "node scripts/fetch-data.mjs",
+    "test:world": "node scripts/check-world.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "5.3.0",
