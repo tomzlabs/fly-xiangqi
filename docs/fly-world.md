@@ -1,6 +1,6 @@
 # 蝇境：模拟 → 分镜 → 视频
 
-入口：`/world/`。主站象棋保留。
+入口：`/`。旧 `/world/` 链接跳转到首页。
 
 ## 已实现
 
@@ -19,7 +19,7 @@
 npm run dev -- --port 5190
 ```
 
-打开 `/world/`，积累至少 4 秒世界时间，点击「导出分镜」。世界/神经模型时间 1:1；完整网络计算通常慢于真实时间。录制长度按实际墙钟计算。
+打开 `/`，积累至少 4 秒世界时间，点击「导出分镜」。世界/神经模型时间 1:1；完整网络计算通常慢于真实时间。录制长度按实际墙钟计算。
 
 离线检查，不产生 API 请求：
 
@@ -45,6 +45,10 @@ uv run --with openai python scripts/world-video.py ~/Downloads/fly-world-plan.js
 
 ## 验证
 
-`node scripts/check-world.mjs` 验证实际完整图的连续性、同种子可重复与断开突触后输出归零。`npm test` 保留象棋与原数值测试。
+`node scripts/check-world.mjs` 验证实际完整图的连续性、同种子可重复与断开突触后输出归零。`npm test` 检查世界适配器、资源哈希与原数值模型。
 
 视频接口参考：[OpenAI video generation](https://developers.openai.com/api/docs/guides/video-generation)。真实数据来源与许可证见项目 README。
+
+## 实时直播方向
+
+Sora 工作器用于短片样片与离线导出。若要做持续视频流，优先按 [Truman World 调查](trumanworld-research.md) 验证 H3 Max Director；本次没有接通该付费服务。

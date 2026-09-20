@@ -1,6 +1,6 @@
 {
-  "name": "fly-xiangqi-lab",
-  "version": "0.2.0",
+  "name": "fly-world",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,10 +11,9 @@
     "preview": "vite preview --host 0.0.0.0",
     "data": "python scripts/prepare_data.py",
     "test": "cargo test --manifest-path native/Cargo.toml && node --test tests/*.test.mjs",
-    "benchmark": "node scripts/benchmark.mjs",
+    "benchmark": "node scripts/check-world.mjs",
     "test:browser": "node scripts/browser-check.mjs",
     "test:brian2": "python scripts/verify_brian2.py",
-    "test:rules": "node --test tests/*.test.mjs",
     "data:fetch": "node scripts/fetch-data.mjs",
     "test:world": "node scripts/check-world.mjs"
   },

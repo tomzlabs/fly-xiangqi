@@ -59,10 +59,7 @@ self.onmessage=async ({data}) => {
       const result=worldBrain.step(data.channels);
       postMessage({type:'world-result',result});
     }
-    else if (data.type==='run' && engine) {
-      const result=await engine.run(data.options,chunk => postMessage({type:'chunk',id:data.id,...chunk}),()=>new Promise(r=>setTimeout(r,0)));
-      postMessage({type:'result',id:data.id,result},[result.events.buffer]);
-    }
+
   } catch (error) { postMessage({type:'error',id:data.id,message:error.message}); }
   finally { busy=false; }
 };

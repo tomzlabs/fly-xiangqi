@@ -3,5 +3,17 @@
   "framework": "vite",
   "installCommand": "npm ci",
   "buildCommand": "npm run data:fetch && npm run build:web",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/world",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/world/:path*",
+      "destination": "/",
+      "permanent": true
+    }
+  ]
 }

@@ -2,9 +2,9 @@ Licensing scope
 ===============
 
 The MIT License below applies ONLY to original contributions made for the
-Xiangqi adaptation by tomzlabs, including src/xiangqi.mjs,
-tests/xiangqi.test.mjs, scripts/fetch-data.mjs, and original modifications
-introduced by this adaptation.
+adaptations by tomzlabs, including the fly-world interface and adapter,
+video pipeline, scripts/fetch-data.mjs, and original modifications introduced
+by these adaptations.
 
 It does not relicense pre-existing code from tolatolatop/fly-chess. That
 upstream repository did not declare a project license when this adaptation was

@@ -7,8 +7,8 @@ const read=p=>readFileSync(p);
 const meta=JSON.parse(gunzipSync(read('public/data/neurons.json.gz'))),manifest=JSON.parse(read('public/data/manifest.json'));
 const wm=JSON.parse(read('public/wasm/manifest.json'));
 const engine=await NeuralEngine.create(read('public/wasm/fly_brain.wasm'),gunzipSync(read('public/data/connectome.bin.gz')),meta,manifest,wm.sha256);
-function run(transmission=true){const brain=new ContinuousBrain(engine);if(!transmission)engine.e.reset(42,0);const state=createWorld(),results=[];for(let i=0;i<8;i++){const r=brain.step(sense(state));advanceWorld(state,r);results.push(r);}return {state,results};}
-const a=run(),b=run(),lesion=run(false);
+function run(transmission=true,stimuli=null){const brain=new ContinuousBrain(engine);if(!transmission)engine.e.reset(42,0);const state=createWorld(),results=[],inputs=[];for(let i=0;i<8;i++){const channels=stimuli?.[i]??sense(state);inputs.push(channels);const r=brain.step(channels);advanceWorld(state,r);results.push(r);}return {state,results,inputs};}
+const a=run(),b=run(),lesion=run(false,a.inputs);
 assert.deepEqual(a,b,'continuous simulation must reproduce from the same seed');
 assert.equal(a.results.at(-1).neuralMs,960);
 assert.ok(a.results.some(r=>r.signal>0));

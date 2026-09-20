@@ -1,4 +1,4 @@
-name: Verify Xiangqi
+name: Verify Fly World
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: xiangqi-ci
+  group: fly-world-ci
   cancel-in-progress: true
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
         run: rustup show
       - name: Build Vercel static site with checked-in WASM
         run: npm run build:web
-      - name: Verify numerical core, chess adapter and data integrity
+      - name: Verify numerical core, world adapter and data integrity
         run: npm test
       - name: Check full-network determinism and disconnected control
         run: npm run benchmark

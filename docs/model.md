@@ -2,7 +2,7 @@
 
 ## Scope
 
-This is an engineering experiment using an author's public connectome-derived graph. It is not a reproduction of every experiment in the Shiu paper, a reconstruction of an individual fly's full physiology, or evidence that a fly understands chess. No learning occurs during play. Reset per trial is intentional and part of the versioned contract.
+This is an engineering experiment using an author's public connectome-derived graph. It is not a reproduction of every experiment in the Shiu paper, a reconstruction of an individual fly's full physiology, or evidence of a fly’s subjective experience. No learning occurs. One reset initializes a continuous world; subsequent windows preserve native state.
 
 ## Network
 
@@ -35,22 +35,20 @@ g = g*ag
 
 Order is membrane integration → threshold detection `v > -45` → due synaptic arrival → seeded external stimulus → spike resets. Synaptic arrival adds signed synapse count × 0.275 to g, except that arrival to refractory neurons is discarded. A spike resets v to −52 and g to zero, schedules outgoing events 18 steps later, and holds ordinary neurons refractory until spike step + 22. Stimulated neurons have zero refractory period, matching the reference's activation convention. Both v and g are frozen while refractory. The chosen operation order is independently compared with Brian2 on a controlled circuit.
 
-External drive uses xorshift32, one draw per stimulated neuron per step, with event probability `rateHz * h / 1000`; an event adds 68.75 mV to v. This is the finite time-step Bernoulli approximation used for a single Poisson source; it is not exact continuous-time Poisson sampling. The maximum per-step probability in the chess adapter is 0.018. Draw order follows the source neuron order, and the same inputs/seed are used in the disconnected control.
+External drive uses xorshift32, one draw per stimulated neuron per step, with event probability `rateHz * h / 1000`; an event adds 68.75 mV to v. This is the finite time-step Bernoulli approximation used for a single Poisson source; it is not exact continuous-time Poisson sampling. The maximum per-step probability in the world adapter is 0.018. Draw order follows the source neuron order, and the same inputs/seed are used in the disconnected control.
 
-## Xiangqi interface (artificial)
+## World interface (artificial)
 
-Square index is file + 9×rank (files a–i, ranks 0–9), channel is square×14 + piece type (`pnbrack`) + 0 for side to move / 7 for opponent. Visual sensory neuron number j in the annotation-selected list receives channel j mod 1260. Only occupied channels are stimulated at 180 Hz. This is an artificial injection into visual sensory neurons, not a fly visual model, not natural image processing, and not a biological retinal map.
+The world adapter uses eight channels: left/right distance-derived fruit cues, left/right heading-dependent light, two boundary proximity cues, simulated hunger and a baseline. The selected sensory neuron j receives channel j modulo 8, at 1 + 179 × channel Hz. Positive rates keep the native stimulated-neuron list stable. Mapping abstract fruit cues into these annotation-selected sensory neurons is an engineering choice, not a validated olfactory circuit.
 
-Output is restricted to annotations `descending` and `motor`. Those indices are disjoint from the input set. Feature i is spike count i plus the time-average of `(v_i+52)/7`. The voltage average includes all post-event states in the trial and includes negative subthreshold effects.
+Every 120 ms (1,200 integration steps), the adapter computes output features from **window deltas** of cumulative counts and integrated voltage. A feature is the window spike count plus average membrane offset divided by 7 mV. Each of five actions (forward, left, right, groom, rest) has reproducible ±1 coefficients produced from neuron index and action name. The highest projected score wins; near-zero norm produces rest. The decoder is fixed and untrained.
 
-For each legal UCCI action, `rankMoves` generates a reproducible ±1 coefficient for each output neuron with a fixed integer mixing function and projects the feature vector onto those coefficients, normalized by sqrt(output count). No coefficient is learned. This arbitrary decoder often produces poor chess; no ELO, expertise, or evolved chess knowledge is implied. It also means the action mapping is not biologically meaningful. With near-zero feature norm, no action is selected. Ties are resolved by ascending UCCI string, explicitly outside the neural model.
+The environment converts these choices into bounded position and heading updates. Fruit proximity replenishes a simulated energy variable. Energy, walls, speed and anatomy are illustrative rules, not a biomechanical fly model. World time and neural time advance 1:1. Graphics interpolate position between windows, so visual FPS does not represent neural simulation speed.
 
-The local Xiangqi adapter (`xiangqi-90x14-v1`) provides legality and game termination, including stalemate as a loss. The experiment uses simplified threefold-repetition / 120 non-capture halfmove draws, without tournament perpetual-check or chase adjudication. There is no direct board-evaluation feature, no stockfish process, no opening lookup, no search tree, and no mate-in-one override. All scored action preferences depend on the output feature vector.
+## Continuity and verification
 
-## Telemetry and intervention
+`ContinuousBrain` resets only when constructed. Membrane voltages, conductances, refractory deadlines, delayed synaptic events and RNG state remain in the WASM instance across windows. Refreshing the page starts a new session; no native checkpoint is persisted. An explicit time limit stops a session before native tick overflow.
 
-Every threshold crossing is recorded as `[step, neuron_index]`. Chunks are posted every 50 steps and visualized as bright points at corresponding real anchor positions. No synthetic activity or random waiting pulses are added. Playback is explicitly labelled as replay; visual fading is illustrative, not a membrane-state estimate. The static point cloud includes quiescent neurons.
+`scripts/check-world.mjs` replays eight continuous windows twice from seed 42 and requires identical results. The disconnected control replays the same sensory sequence recorded in the intact run, so it isolates removal of synaptic transmission rather than changed environmental feedback. Output signal must disappear. This establishes dependence on connections for the tested inputs, not biological behavioral accuracy or superiority to a randomized graph.
 
-The disconnect control sets transmission to false, resets the model, and repeats exactly the same FEN, seed, duration and drive channels. Input neurons still fire; outgoing edges do not deliver current. Output signal should disappear because outputs are not directly driven. This establishes dependence on connectivity for that trial. It does not establish that the biological graph beats a random graph or a board-only model. Shuffled-graph controls and trained readout evaluations remain future work.
-
-Reports include graph and WASM SHA-256, exact adapter/model version, source manifest, stimulus channels, output features, action scores and the complete threshold event list. `scripts/verify-record.mjs` recomputes a downloaded trial and checks event-level equality. The test is numerical reproducibility, not an independent biological validation.
+Raw threshold events are counted for the current window. The UI displays actual spike totals and neural time, with no fabricated network activity. Video prompts are artistic descriptions derived from simulated state; a video model can deviate from positions and actions and is not a scientific measurement.

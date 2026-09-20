@@ -4,11 +4,10 @@
 - **Model paper:** Shiu et al., *A Drosophila computational brain model reveals sensorimotor processing*, Nature 634, 210–219 (2024). https://doi.org/10.1038/s41586-024-07763-9 .
 - **Connectome:** FlyWire / FAFB adult female Drosophila, as supplied by the above authors in their v783 model release. Credit the underlying FlyWire Consortium and contributors. The counts here describe this particular author export; they must not be substituted for counts in other full-brain releases.
 - **Neuron annotations and anchor positions:** [flyconnectome/flywire_annotations](https://github.com/flyconnectome/flywire_annotations), pinned commit in the manifest. Schlegel et al., *Whole-brain annotation and multi-connectome cell typing of Drosophila*, Nature 634, 139–152 (2024), https://doi.org/10.1038/s41586-024-07686-5 . The pinned table includes later annotation updates; it is not presented as an unchanged 2024 table. Its authors retain ownership of their data. See their repository and publication for source attribution and reuse terms.
-- **Application upstream:** [tolatolatop/fly-chess](https://github.com/tolatolatop/fly-chess). This workspace adapts its UI, worker, neural simulation and experiment tools to Xiangqi.
-- **Rules:** local Xiangqi implementation in `src/xiangqi.mjs`; the original international-chess dependency has been removed.
+- **Application upstream:** [tolatolatop/fly-chess](https://github.com/tolatolatop/fly-chess). The neural loader, Rust/WASM simulation and data preparation descend from this application. The current product is a continuous fly-world experiment.
 - **Rendering:** Three.js, MIT.
 - **Fonts:** Space Grotesk and IBM Plex Mono, SIL Open Font License; distributed locally through Fontsource with upstream notices in the corresponding packages.
 
-The brain point cloud renders scaled measured anchor positions, not neuron morphologies. The Xiangqi fly logo was generated for this adaptation; its prompt is in docs/logo.md. The Chinese chess piece SVGs were created for this interface.
+The habitat and fly geometry are illustrative simulation graphics, not a measured anatomical reconstruction.
 
 `eonsystemspbc/fly-brain` (GPL-2.0) and `vaibhavkedarisetti/fruit-fly-lab` were inspected as related projects, not incorporated as code or binary dependencies. No license grant is inferred from a GitHub repository merely being public.
